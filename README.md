@@ -9,9 +9,16 @@ One command to:
 
 ## requirements
 
-python3.7+
-node14+
-docker
+| service name | commit'ish | local directory | empty | + common |
+| --- | --- | --- | --- | --- |
+| siibra-config | git | | git | |
+| siibra-python | git | | git | python3.7+ |
+| siibra-api | git |  | git | python3.7+,docker |
+| siibra-explorer | git, node14+ | node14+ | docker |
+
+empty ports on:
+
+6379, 10081, 8080
 
 ## example
 
