@@ -25,21 +25,13 @@ empty ports on:
 ```sh
 
 # create a new venv, activate it
-python -m venv venv/ && . venv/bin/activate && pip install -U pip
+python -m venv venv/ && . venv/bin/activate && pip install -U pip && pip install -r requirements.txt
 
 python main.py \
-
-    # use siibra configuration commitish feat_addJba3ColinMesh from remote
-    --config feat_addJba3ColinMesh \ 
-
-    # use siibra-python commit'ish (tag) v0.4a57
-    --spy v0.4a57 \ 
-
-    # use siibra-api from local directory
-    --sapi ~/dev/projects/siibra-api/ \
-
-    # use siibra-explorer from local directory
-    --sxplr ~/dev/projects/siibra-explorer/
+    --config feat_addJba3ColinMesh `# use siibra configuration commitish feat_addJba3ColinMesh from remote` \
+    --spy v0.4a57 `# use siibra-python commit'ish (tag) v0.4a57` \
+    --sapi ~/dev/projects/siibra-api/ `# use siibra-api from local directory` \
+    --sxplr ~/dev/projects/siibra-explorer/ `# use siibra-explorer from local directory`
 ```
 
 ## TODO
