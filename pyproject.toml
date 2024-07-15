@@ -1,0 +1,25 @@
+[build-system]
+
+requires = ["setuptools>=61.0", "requests"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "siibra-compose"
+version = "0.0.1"
+authors = [
+  { name="Xiao Gui", email="xgui3783@gmail.com" },
+]
+description = "Foo"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+]
+
+[project.urls]
+Homepage = "https://github.com/FZJ-INM1-BDA/siibra-compose"
+Issues = "https://github.com/FZJ-INM1-BDA/siibra-compose/issues"
+
+[project.scripts]
+siibra-compose = "siibra_compose.cli:cli"

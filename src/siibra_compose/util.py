@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Callable, Mapping
+from typing import List, Callable, Mapping, TypeVar, Type, Union
 from enum import Enum
 import requests
 from pathlib import Path
@@ -9,13 +9,19 @@ import shutil
 from concurrent.futures import ThreadPoolExecutor
 from time import sleep
 from itertools import repeat
-from logger import logger
+import datetime
+
+from .logger import logger
 
 class Status(Enum):
     PENDING='PENDING' # default signifies prior to run starting
     SUCCESS='SUCCESS' # set after run completes
     WARNING='WARNING' # set... during run/if run completes with error?
     ERROR='ERROR' # sets if run errors
+
+
+LINE_UP = '\033[1A'
+LINE_CLEAR = '\x1b[2K'
 
 class Task:
     name: str = "base_task"
@@ -63,10 +69,7 @@ class Task:
                 fh = log(f"{self.name}.log")
                 fh.write(f"Error cleaning up: {str(e)}")
     
-    def __init__(self, *args, latest_version=None, **kwargs) -> None:
-        if latest_version is None:
-            raise RuntimeError(f"latest_version must be defined")
-        self.latest_version = latest_version
+    def __init__(self, *args, **kwargs) -> None:
         self.cleanup_cb: List[Callable] = []
     
 
@@ -76,9 +79,24 @@ class Task:
         while len(Task._CleanupCallbacks) > 0:
             Task._CleanupCallbacks.pop()()
 
+class PortedTask(Task):
+    def __init__(self, *args, port=None, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.port = port
+    
+    def __post_init__(self):
+        verify_port(self.port)
+
+
+T = TypeVar("T", bound=Task)
+
 @dataclass
 class Workflow:
     tasks: List[Task] = field(default_factory=list)
+
+    def get_tasks(self, TaskType: Type[T]):
+        return [t for t in self.tasks if isinstance(t, TaskType)]
+
 
     @staticmethod
     def RunPre(task: Task):
@@ -147,8 +165,12 @@ class Workflow:
         logger.info(f"Boot complete. Checking status ...")
         while True:
             try:
+                t = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                msg = f"{t} {' | '.join([(task.name + ': ' + str(task.status)) for task in self.tasks])}"
+                print(msg)
                 sleep(5)
-                logger.info(f"\r{' | '.join([(task.name + ': ' + str(task.status)) for task in self.tasks])}")
+                print(LINE_CLEAR, end=LINE_UP)
+                
             except KeyboardInterrupt:
                 logger.info(f"Interrupted by user, terminating ...")
                 break
@@ -186,9 +208,8 @@ def get_module_path(arg, git_url):
         used_tmp = True
 
     def callback():
-        if not used_tmp:
-            return
-        shutil.rmtree(module_path, ignore_errors=True)
+        if used_tmp:
+            shutil.rmtree(module_path, ignore_errors=True)
     Task._CleanupCallbacks.append(callback)
     return module_path
 
@@ -196,3 +217,22 @@ def log(filename):
     fp = open(filename, "a")
     Task._CleanupCallbacks.append(fp.close)
     return fp
+
+def verify_port(port: Union[int, str]):
+    if isinstance(port, int):
+        return
+    try:
+        int(port)
+    except ValueError as e:
+        raise RuntimeError(f"Cannot parse {port} as int") from e
+
+_cache_value = None
+def get_latest_siibra_version():
+    """Cache is used here, not only for efficiency, but also to prevent the rare scenario where between two separate calls to get_latest_siibra_version, a new release is made."""
+    global _cache_value
+    if _cache_value is None:
+        latest_release=get_latest_release("fzj-inm1-bda", "siibra-python")
+        latest_tag: str=latest_release.get("tag_name")
+        assert latest_tag, f"Expected tag_name to be defined, but was not"
+        _cache_value = latest_tag.lstrip("v")
+    return _cache_value

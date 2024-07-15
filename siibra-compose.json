@@ -1,0 +1,22 @@
+{
+    "$schema": "./siibra-compose-schema.json",
+    "version": "0.0.1",
+    "config": {
+        "ref": "/home/xiao/dev/projects/siibra-configurations"
+    },
+    "python": {
+        "ref": "/home/xiao/dev/projects/siibra-python"
+    },
+    "api": {
+        "port": 10081,
+        "ref": "/home/xiao/dev/projects/siibra-api",
+        "redis": {
+            "port": 6379,
+            "disabled": true
+        }
+    },
+    "explorer": {
+        "port": 8080,
+        "ref": "/home/xiao/dev/projects/siibra-explorer"
+    }
+}

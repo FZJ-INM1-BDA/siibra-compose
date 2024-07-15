@@ -1,0 +1,2 @@
+NAME_SPACE="siibra-compose"
+CONFIG_PATH_KEY="CONFIG_PATH_KEY"
