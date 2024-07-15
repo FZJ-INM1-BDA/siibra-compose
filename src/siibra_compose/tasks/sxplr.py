@@ -16,9 +16,9 @@ class SxplrNodeTask(PortedTask):
         self.sxplr_path=sxplr_path
 
     def should_run(self, workflow: Workflow) -> bool:
-        sapi_tasks = workflow.get_tasks(SapiTask)
+        sapi_tasks = workflow.find_tasks(SapiTask)
         assert len(sapi_tasks) == 1, f"Expected one and only one siibra-api task to be run, but got {len(sapi_tasks)}"
-        assert sapi_tasks[0].port == 10081, f"At the moment, siibra explorer node can only handle siibra-api running on port 10081. TODO fix in future"
+        assert sapi_tasks[0].port == 10081, f"At the moment, siibra explorer node can only handle siibra-api running on port 10081 {sapi_tasks[0].port}. TODO fix in future"
         return True
 
     def pre(self):
@@ -45,7 +45,9 @@ class SxplrNodeTask(PortedTask):
         subprocess.run(["npm", "i"], cwd=self.sxplr_path, stdout=log(f"{NAME_SPACE}-siibra-explorer-install.log"), stderr=subprocess.STDOUT)
     
     def run(self):
-        sxplr_process = subprocess.Popen(["./node_modules/.bin/ng", "serve"], cwd=self.sxplr_path, start_new_session=True, stdout=log(f"{NAME_SPACE}-siibra-explorer.log"), stderr=subprocess.STDOUT)
+        sxplr_process = subprocess.Popen(["./node_modules/.bin/ng",
+                                          "serve",
+                                          "--port", str(self.port)], cwd=self.sxplr_path, start_new_session=True, stdout=log(f"{NAME_SPACE}-siibra-explorer.log"), stderr=subprocess.STDOUT)
         def kill_npm_process():
             sxplr_process.send_signal(signal.SIGTERM)
         self.cleanup_cb.append(kill_npm_process)
@@ -60,7 +62,7 @@ class SxplrDockerTask(PortedTask):
         self.sapi_port = None
     
     def should_run(self, workflow: Workflow) -> bool:
-        sapi_tasks = workflow.get_tasks(SapiTask)
+        sapi_tasks = workflow.find_tasks(SapiTask)
         assert len(sapi_tasks) == 1, f"Expected one and only one siibra-api task to be run, but got {len(sapi_tasks)}"
         self.sapi_port = sapi_tasks[0].port
         return True

@@ -70,8 +70,8 @@ $ echo '{
     "explorer": {
         "port": 10001
     }
-}' > siibra-compose.json
-$ siibra-compose
+}' > complex-siibra-compose.json
+$ siibra-compose -f complex-siibra-compose.json
 ```
 
 ## License

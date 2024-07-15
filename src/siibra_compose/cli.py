@@ -2,7 +2,6 @@ import click
 from pathlib import Path
 import sys
 import json
-from functools import partial
 
 from siibra_compose.util import Workflow
 from siibra_compose.tasks import ConfigTask, SpyTask, SapiTask, SxplrDockerTask, SxplrNodeTask
@@ -28,7 +27,7 @@ def parse_v1(config_json):
     sapi_task = SapiTask(sapi.pop("ref", None), **sapi)
     workflow.register_task(sapi_task)
 
-    sxplr_task = SxplrNodeTask(sxplr.pop("ref", None), **sxplr) if sxplr else SxplrDockerTask()
+    sxplr_task = SxplrNodeTask(sxplr.pop("ref", None), **sxplr) if sxplr.get("ref") else SxplrDockerTask(**sxplr)
     workflow.register_task(sxplr_task)
 
     workflow.run()

@@ -94,7 +94,7 @@ T = TypeVar("T", bound=Task)
 class Workflow:
     tasks: List[Task] = field(default_factory=list)
 
-    def get_tasks(self, TaskType: Type[T]):
+    def find_tasks(self, TaskType: Type[T]):
         return [t for t in self.tasks if isinstance(t, TaskType)]
 
 

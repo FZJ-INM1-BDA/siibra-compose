@@ -10,8 +10,8 @@ from .spy import SpyTask
 class SapiTask(PortedTask):
     name="sapi_task"
 
-    def __init__(self, sapi: str, *args, redis=None, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, sapi: str, *args, redis=None, port=10081, **kwargs) -> None:
+        super().__init__(*args, port=port, **kwargs)
         if redis is None:
             redis = {
                 "port": 6379,
@@ -44,7 +44,7 @@ class SapiTask(PortedTask):
         # must check spy is already installed. 
         # Otherwise siibra-api will attempt to install siibra from pypi
         
-        spy_tasks = [ task for task in workflow.get_tasks(SpyTask) ]
+        spy_tasks = [ task for task in workflow.find_tasks(SpyTask) ]
         assert len(spy_tasks) == 1, f"Expecting one and only one spy_task, but got {len(spy_tasks)}"
         spy_installed = (spy_tasks[0].status == Status.SUCCESS)
         logger.debug(f"{self.name} should run: {config_cloned and spy_installed}")
