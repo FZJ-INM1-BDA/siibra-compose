@@ -2,6 +2,7 @@ import subprocess
 from pathlib import Path
 import signal
 import os
+from packaging.version import Version
 
 from siibra_compose.util import PortedTask, get_module_path, log, get_latest_release, Workflow, logger, Status, verify_port
 from siibra_compose.const import NAME_SPACE, CONFIG_PATH_KEY
@@ -48,6 +49,13 @@ class SapiTask(PortedTask):
         assert len(spy_tasks) == 1, f"Expecting one and only one spy_task, but got {len(spy_tasks)}"
         spy_installed = (spy_tasks[0].status == Status.SUCCESS)
         logger.debug(f"{self.name} should run: {config_cloned and spy_installed}")
+
+        siibra_version = spy_tasks[0].version
+        if Version(siibra_version) >= Version("0.5"):
+            logger.warning(f"Detected siibra with version {siibra_version}, which is >= 0.5."
+                           "siibra-api is currently optimized for siibra version 0.4 and below."
+                           "siibra-compose may not function properly.")
+        
         return config_cloned and spy_installed
     
     def run(self):

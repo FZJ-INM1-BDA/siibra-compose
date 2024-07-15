@@ -17,3 +17,7 @@ class SpyTask(Task):
     
     def run(self):
         subprocess.run(["pip", "install", "-e", self.spy_path], stdout=log(f"{NAME_SPACE}-siibra-python.log"), stderr=subprocess.STDOUT)
+
+    @property
+    def version(self):
+        return subprocess.check_output(["python", "-c", "import siibra; print(siibra.__version__)"]).decode().strip()
