@@ -56,7 +56,8 @@ $ echo '{
     "api": {
         "redis": {
             "disabled": true
-        }
+        },
+        "ref": "master"
     },
     "python": {
         "ref": "v0.4a87"
