@@ -24,7 +24,7 @@ Python `venv` and ...
 
 ```sh
 
-$ pip install git@https://github.com/FZJ-INM1-BDA/siibra-compose.git
+$ pip install git+https://github.com/FZJ-INM1-BDA/siibra-compose.git
 
 ```
 
@@ -36,8 +36,35 @@ Example below shows a minimal working example. It will use the latest released s
 
 ```sh
 # create a new venv, activate it
-$ python -m venv venv/ && . venv/bin/activate && pip install -U pip
 $ echo '{"version": "0.0.1"}' > siibra-compose.json
+$ siibra-compose
+```
+
+### Without docker
+
+If you do not have docker installed on your system, you can forgo redis cache, and run siibra-explorer locally:
+
+```sh
+
+$ echo '{
+    "$schema": "https://raw.githubusercontent.com/FZJ-INM1-BDA/siibra-compose/refs/heads/master/siibra-compose-schema.json",
+    "version": "0.0.1",
+    "explorer": {
+        "port": 7700,
+        "ref": "master"
+    },
+    "api": {
+        "redis": {
+            "disabled": true
+        }
+    },
+    "python": {
+        "ref": "v0.4a87"
+    },
+    "config": {
+        "ref": "siibra-0.4a87"
+    }
+}' > siibra-compose.json
 $ siibra-compose
 ```
 
@@ -50,9 +77,8 @@ Additionally, siibra-api is configured to run on port `7095`, with the redis cac
 Lastly, it also shows the JSONSchema file in the repository `./siibra-compose-schema.json`, which hopefully would help one write configuration JSON much easily.
 
 ```sh
-$ python -m venv venv/ && . venv/bin/activate && pip install -U pip
 $ echo '{
-    "$schema": "./siibra-compose-schema.json",
+    "$schema": "https://raw.githubusercontent.com/FZJ-INM1-BDA/siibra-compose/refs/heads/master/siibra-compose-schema.json",
     "version": "0.0.1",
     "config": {
         "ref": "/path/to/my/siibra-config"

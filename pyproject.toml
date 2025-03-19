@@ -1,6 +1,6 @@
 [build-system]
 
-requires = ["setuptools>=61.0", "requests", "click", "packaging"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -9,7 +9,10 @@ version = "0.0.1"
 authors = [
   { name="Xiao Gui", email="xgui3783@gmail.com" },
 ]
-description = "Foo"
+dependencies = [
+    "requests", "click", "packaging"
+]
+description = "Spinning up a working environment for siibra-toolsuite"
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
