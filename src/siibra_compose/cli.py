@@ -18,11 +18,11 @@ def parse_v1(config_json):
 
     workflow=Workflow()
     
-    config_task=ConfigTask(scfg.pop("ref", None), **scfg)
-    workflow.register_task(config_task)
-    
     spy_task = SpyTask(spy.pop("ref", None), **spy)
     workflow.register_task(spy_task)
+
+    config_task=ConfigTask(scfg.pop("ref", None), **scfg)
+    workflow.register_task(config_task)
 
     sapi_task = SapiTask(sapi.pop("ref", None), **sapi)
     workflow.register_task(sapi_task)

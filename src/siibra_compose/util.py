@@ -226,7 +226,10 @@ def verify_port(port: Union[int, str]):
     except ValueError as e:
         raise RuntimeError(f"Cannot parse {port} as int") from e
 
-_cache_value = None
+# siibra-api/explorer supports 0.4 version of siibra-python/configuration
+# see https://github.com/FZJ-INM1-BDA/siibra-api/blob/master/requirements/siibra.txt for the latest supported version
+LATEST_SUPPORTED_VERSION = "0.4a87"
+_cache_value = LATEST_SUPPORTED_VERSION
 def get_latest_siibra_version():
     """Cache is used here, not only for efficiency, but also to prevent the rare scenario where between two separate calls to get_latest_siibra_version, a new release is made."""
     global _cache_value

@@ -49,6 +49,8 @@ class SapiTask(PortedTask):
         assert len(spy_tasks) == 1, f"Expecting one and only one spy_task, but got {len(spy_tasks)}"
         spy_installed = (spy_tasks[0].status == Status.SUCCESS)
         logger.debug(f"{self.name} should run: {config_cloned and spy_installed}")
+        if not spy_installed:
+            return False
 
         siibra_version = spy_tasks[0].version
         if Version(siibra_version) >= Version("0.5"):

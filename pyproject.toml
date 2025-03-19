@@ -1,6 +1,6 @@
 [build-system]
 
-requires = ["setuptools>=61.0", "requests"]
+requires = ["setuptools>=61.0", "requests", "click", "packaging"]
 build-backend = "setuptools.build_meta"
 
 [project]

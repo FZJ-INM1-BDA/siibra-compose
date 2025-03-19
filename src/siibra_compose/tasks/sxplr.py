@@ -14,26 +14,33 @@ class SxplrNodeTask(PortedTask):
         super().__init__(*args, port=port, **kwargs)
         sxplr_path=get_module_path(sxplr, "https://github.com/fzj-inm1-bda/siibra-explorer.git")
         self.sxplr_path=sxplr_path
+        self.sapi_port = None
 
     def should_run(self, workflow: Workflow) -> bool:
         sapi_tasks = workflow.find_tasks(SapiTask)
         assert len(sapi_tasks) == 1, f"Expected one and only one siibra-api task to be run, but got {len(sapi_tasks)}"
-        assert sapi_tasks[0].port == 10081, f"At the moment, siibra explorer node can only handle siibra-api running on port 10081 {sapi_tasks[0].port}. TODO fix in future"
+        self.sapi_port = sapi_tasks[0].port
         return True
 
     def pre(self):
-        
-        def process_sxplr_env(line: str):
-            return line.lstrip().lstrip("/") if "endpoint-local-10081" in line else f"// {line}"
+        subprocess.run(["npm", "i"], cwd=self.sxplr_path, stdout=log(f"{NAME_SPACE}-siibra-explorer-install.log"), stderr=subprocess.STDOUT)
+    
+    def run(self):
         
         # TODO not perfect, figure out a more permanent solution?
         path_to_env = Path(self.sxplr_path, "src/environments/environment.common.ts")
         with open(path_to_env, "r") as fp:
             original_lines = fp.readlines()
-            new_lines = [
-                process_sxplr_env(line) if "endpoint" in line else line
-                for line in original_lines
-            ]
+            new_lines = []
+            for line in original_lines:
+                if not line.strip().startswith("SIIBRA_API_ENDPOINTS"):
+                    new_lines.append(line)
+                    continue
+
+                line = line.replace("SIIBRA_API_ENDPOINTS", "_SIIBRA_API_ENDPOINTS")
+                new_lines.append(f"SIIBRA_API_ENDPOINTS: 'http://127.0.0.1:{self.sapi_port}/v3_0',")
+                new_lines.append(line)
+                
         with open(path_to_env, "w") as fp:
             fp.write("".join(new_lines))
 
@@ -42,9 +49,6 @@ class SxplrNodeTask(PortedTask):
                 fp.write("".join(original_lines))
         self.cleanup_cb.append(spxlr_env_cleanup)
         
-        subprocess.run(["npm", "i"], cwd=self.sxplr_path, stdout=log(f"{NAME_SPACE}-siibra-explorer-install.log"), stderr=subprocess.STDOUT)
-    
-    def run(self):
         sxplr_process = subprocess.Popen(["./node_modules/.bin/ng",
                                           "serve",
                                           "--port", str(self.port)], cwd=self.sxplr_path, start_new_session=True, stdout=log(f"{NAME_SPACE}-siibra-explorer.log"), stderr=subprocess.STDOUT)

@@ -1,22 +1,20 @@
 {
-    "$schema": "./siibra-compose-schema.json",
+    "$schema": "https://raw.githubusercontent.com/FZJ-INM1-BDA/siibra-compose/refs/heads/master/siibra-compose-schema.json",
     "version": "0.0.1",
-    "config": {
-        "ref": "/home/xiao/dev/projects/siibra-configurations"
-    },
-    "python": {
-        "ref": "/home/xiao/dev/projects/siibra-python"
+    "explorer": {
+        "port": 7700,
+        "ref": "master"
     },
     "api": {
-        "port": 10081,
-        "ref": "/home/xiao/dev/projects/siibra-api",
         "redis": {
-            "port": 6379,
             "disabled": true
-        }
+        },
+        "ref": "master"
     },
-    "explorer": {
-        "port": 8080,
-        "ref": "/home/xiao/dev/projects/siibra-explorer"
+    "python": {
+        "ref": "v0.4a87"
+    },
+    "config": {
+        "ref": "siibra-0.4a87"
     }
 }
