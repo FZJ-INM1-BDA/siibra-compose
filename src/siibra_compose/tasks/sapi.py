@@ -78,7 +78,10 @@ class SapiTask(PortedTask):
             self.cleanup_cb.append(lambda: subprocess.run([ "docker", "stop", f"{NAME_SPACE}-redis" ], stdout=log(f"{NAME_SPACE}-redis.log"), stderr=subprocess.STDOUT))
 
         # Now, start the uvicorn instance
-        api_process=subprocess.Popen(["uvicorn", "api.server:api", "--port", f"{self.port}"], cwd=self.sapi_path, start_new_session=True, env={
+        api_process=subprocess.Popen(["uvicorn", "api.server:api",
+                                      "--host", "0.0.0.0",
+                                      "--port", f"{self.port}"
+                                      ], cwd=self.sapi_path, start_new_session=True, env={
             **os.environ,
             "SIIBRA_USE_CONFIGURATION": self.keyval[CONFIG_PATH_KEY],
             "REDIS_PORT": str(self.redis_port)
