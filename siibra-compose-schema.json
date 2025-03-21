@@ -57,6 +57,11 @@
                     "type": "number",
                     "default": 8080,
                     "description": "Port by which siibra-explorer will run."
+                },
+                "host": {
+                    "type": "string",
+                    "default": "localhost",
+                    "description": "Host of API which siibra-explorer will call."
                 }
             }
         },

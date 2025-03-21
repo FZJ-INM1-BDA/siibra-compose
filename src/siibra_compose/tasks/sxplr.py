@@ -61,8 +61,9 @@ class SxplrDockerTask(PortedTask):
     DOCKER_TAG = "docker-registry.ebrains.eu/siibra/siibra-explorer:master"
     SXPLR_DOCKER_CONTAINER_NAME = "sxplr-container"
     
-    def __init__(self, *args, port=8080, **kwargs) -> None:
+    def __init__(self, *args, port=8080, host="localhost", **kwargs) -> None:
         super().__init__(*args, port=port, **kwargs)
+        self.host=host
         self.sapi_port = None
     
     def should_run(self, workflow: Workflow) -> bool:
@@ -77,11 +78,11 @@ class SxplrDockerTask(PortedTask):
     def run(self):
         
         subprocess.run(["docker", "run",
-                        "-p", f"127.0.0.1:{self.port}:8080",
+                        "-p", f"0.0.0.0:{self.port}:8080",
                         "--name", self.SXPLR_DOCKER_CONTAINER_NAME,
                         "--rm",
                         "-dit",
-                        "--env", f"OVERWRITE_API_ENDPOINT=http://localhost:{self.sapi_port}/v3_0",
+                        "--env", f"OVERWRITE_API_ENDPOINT=http://{self.host}:{self.sapi_port}/v3_0",
                         self.DOCKER_TAG],
                         stdout=log(f"{NAME_SPACE}-siibra-explorer.log"),
                         stderr=subprocess.STDOUT)
