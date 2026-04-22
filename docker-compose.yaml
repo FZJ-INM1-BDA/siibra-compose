@@ -1,0 +1,57 @@
+version: '3.0'
+
+services:
+  sapi_server:
+    image: docker-registry.ebrains.eu/siibra/siibra-api:0.3-server
+    container_name: sapi-server
+    ports:
+    - 3000:5000
+    environment:
+      SIIBRA_API_ROLE: server
+      REDIS_HOST: redis
+      REDIS_PORT: '6379'
+      SIIBRA_CACHEDIR: /siibra-cache
+    volumes:
+      - sapi_volume:/siibra-cache
+    depends_on:
+    - redis
+      
+  sapi_worker:
+    image: docker-registry.ebrains.eu/siibra/siibra-api:0.3-worker
+    container_name: sapi-worker
+    environment:
+      SIIBRA_API_ROLE: worker
+      REDIS_HOST: redis
+      REDIS_PORT: '6379'
+      SIIBRA_CACHEDIR: /siibra-cache
+    volumes:
+      - sapi_volume:/siibra-cache
+    depends_on:
+    - redis
+
+  sapi_worker-v4:
+    image: docker-registry.ebrains.eu/siibra/siibra-api:0.3-worker-v4
+    container_name: sapi-worker-v4
+    environment:
+      SIIBRA_API_ROLE: worker
+      REDIS_HOST: redis
+      REDIS_PORT: '6379'
+      SIIBRA_CACHEDIR: /siibra-cache
+    volumes:
+      - sapi_volume:/siibra-cache
+    depends_on:
+    - redis
+
+  redis:
+    image: redis
+
+  sxplr:
+    image: docker-registry.ebrains.eu/siibra/siibra-explorer:master
+    container_name: siibra-explorer
+    ports:
+    - 8080:8080
+    environment:
+      - OVERWRITE_API_ENDPOINT=http://localhost:3000/v3_0
+
+volumes:
+  sapi_volume:
