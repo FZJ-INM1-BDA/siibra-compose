@@ -46,7 +46,7 @@ services:
     image: redis
 
   sxplr:
-    image: docker-registry.ebrains.eu/siibra/siibra-explorer:master
+    image: docker-registry.ebrains.eu/siibra/siibra-explorer:staging-leap
     container_name: siibra-explorer
     ports:
     - 8080:8080
